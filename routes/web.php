@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+//Ruta para mostrar el panel
+
+Route::get('/', 'App\Http\Controllers\PanelController@index')->name("panel.controller");
+
+//Todas las rutas que vamos a crear son de tipo get ya que se solicitan datos a la base de datos
+
