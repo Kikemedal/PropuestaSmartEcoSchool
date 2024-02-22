@@ -23,14 +23,28 @@
 
   <header class="masthead bg-primary text-white text-center py-4">
     <div class="container d-flex align-items-center flex-column">
-      <h2>@yield('subtitle', '')</h2>
+      <h2>@yield('subtitle', 'Esto sera modificado por cada grafica')</h2>
     </div>
   </header>
   <!-- header -->
+  
+  <!-- Cuerpo que será sustituido en las vistas hijas donde se añadiran las graficas visuales -->
+  <div class="container my-4">
+    <div class="row">
+      <div class="col"> 
+        @yield('graficaAgua')
+      </div>
+      <div class="col">
+        @yield('graficaLuz')
+      </div>
+    </div>
+  </div>
 
+
+  <!--Consejos acerca del ahorro de energía y agua -->
   <div class="container my-4">
     <div class="text-center">
-      @yield('content')
+      @yield('comentarios')
     </div>
   </div>
 

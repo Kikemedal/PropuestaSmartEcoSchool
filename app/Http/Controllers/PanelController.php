@@ -10,3 +10,5 @@ class PanelController extends Controller
         return view('plantillas.controlPanel');
     }
 }
+
+
