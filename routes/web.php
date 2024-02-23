@@ -22,3 +22,9 @@ Route::get('/', 'App\Http\Controllers\PanelController@index')->name("panel.contr
 
 Route::get('/annual_consumption', 'App\Http\Controllers\GraphicsController@compararAño') ->name("comparar.año");
 
+Route::get('/monthly_consumption', 'App\Http\Controllers\GraphicsController@compararMes') ->name("comparar.mes");
+
+Route::get('/weekly_consumption', 'App\Http\Controllers\GraphicsController@compararSemana') ->name("comparar.semana");
+
+Route::get('/daily_consumption', 'App\Http\Controllers\GraphicsController@compararDia') ->name("comparar.dia");
+

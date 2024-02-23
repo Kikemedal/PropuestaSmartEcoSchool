@@ -31,11 +31,12 @@
   <!-- Cuerpo que será sustituido en las vistas hijas donde se añadiran las graficas visuales -->
   <div class="container my-4">
     <div class="row">
-      <div class="col"> 
+      <div class= "col"> 
         @yield('graficaAgua')
+        </div>
       </div>
-      <div class="col">
-        @yield('graficaLuz')
+      <div class= "col">
+        @yield('graficaElectricidad')
       </div>
     </div>
   </div>
