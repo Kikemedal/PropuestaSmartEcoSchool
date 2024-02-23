@@ -20,3 +20,5 @@ Route::get('/', 'App\Http\Controllers\PanelController@index')->name("panel.contr
 
 //Todas las rutas que vamos a crear son de tipo get ya que se solicitan datos a la base de datos
 
+Route::get('/annual_consumption', 'App\Http\Controllers\GraphicsController@compararAño') ->name("comparar.año");
+
