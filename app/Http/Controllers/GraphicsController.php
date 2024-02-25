@@ -55,68 +55,76 @@ class GraphicsController extends Controller
         //Para saber el consumo del mes actual necesito saber el consumo acumulado del mes actual y restarselo al cunsumo acumulado
         //del mes anterior. Y para saber el consumo del mes anterior, necesito hacer lo mismo con el mes que le corresponde.
         
-
-        //Obtencion del consumo de ENERO de 2023.
-        
-        $mesActual = 1; // Enero
         $anoActual = 2023;
-        $mesAnterior = 12; // Diciembre
         $anoAnterior = 2022;
-        
-        $queryMesActual = "SELECT m.consumo
-                           FROM measurements m
-                           WHERE MONTH(m.fecha) = $mesActual AND YEAR(m.fecha) = $anoActual AND m.id_sensor = 1
-                           ORDER BY m.fecha DESC
-                           LIMIT 1";
-        
-        $queryMesAnterior = "SELECT m.consumo
-                             FROM measurements m 
-                             WHERE MONTH(m.fecha) = $mesAnterior AND YEAR(m.fecha) = $anoAnterior AND m.id_sensor = 1
-                             ORDER BY m.fecha DESC
-                             LIMIT 1";
-        
-        $consumoMesActual = DB::select($queryMesActual);
-        $consumoMesAnterior = DB::select($queryMesAnterior);
-        
-        $consumoMesActual = $consumoMesActual[0]->consumo;
-        $consumoMesAnterior = $consumoMesAnterior[0]->consumo;
-        
-        $consumoEnero1 = $consumoMesActual - $consumoMesAnterior;
 
+        //En las consultas se usan 1, 2, 12 para obtener las consultas segun el mes.
+        //Si los datos fueran en base al mes actual, se usaria la funcion MONTH(NOW()) para obtener el mes actual.
+        //Asi restandole uno podriamos obtener el mes anterior.
+        //Si da 0 pues aplicariamos logica con php para que sea 12, fuera de la consulta.
 
-        //Obtencion del consumo de FEBRERO de 2023.
+        // Consultas para el sensor de electricidad (id 1)
+        $queryEneroElectricidad = "(SELECT m.consumo
+                    FROM measurements m
+                    WHERE MONTH(m.fecha) = 1 AND YEAR(m.fecha) = $anoActual AND m.id_sensor = 1
+                    ORDER BY m.fecha DESC
+                    LIMIT 1)";
 
-        $mesFebrero = 2; // Febrero
-        $anoFebrero = 2023;
-        $mesEnero = 1; // Enero
-        $anoEnero = 2023;
+        $queryFebreroElectricidad = "(SELECT m.consumo
+                    FROM measurements m
+                    WHERE MONTH(m.fecha) = 2 AND YEAR(m.fecha) = $anoActual AND m.id_sensor = 1
+                    ORDER BY m.fecha DESC
+                    LIMIT 1)";
 
-        $queryFebrero = "SELECT m.consumo
-                 FROM measurements m
-                 WHERE MONTH(m.fecha) = $mesFebrero AND YEAR(m.fecha) = $anoFebrero AND m.id_sensor = 1
-                 ORDER BY m.fecha DESC
-                 LIMIT 1";
+        $queryDiciembreElectricidad = "(SELECT m.consumo
+                    FROM measurements m
+                    WHERE MONTH(m.fecha) = 12 AND YEAR(m.fecha) = $anoAnterior AND m.id_sensor = 1
+                    ORDER BY m.fecha DESC
+                    LIMIT 1)";
 
-        $queryEnero = "SELECT m.consumo
-               FROM measurements m 
-               WHERE MONTH(m.fecha) = $mesEnero AND YEAR(m.fecha) = $anoEnero AND m.id_sensor = 1
-               ORDER BY m.fecha DESC
-               LIMIT 1";
+        // Consultas para el sensor de agua (id 2)
+        $queryEneroAgua = "(SELECT m.consumo
+                    FROM measurements m
+                    WHERE MONTH(m.fecha) = 1 AND YEAR(m.fecha) = $anoActual AND m.id_sensor = 2
+                    ORDER BY m.fecha DESC
+                    LIMIT 1)";
 
-        $consumoFebrero = DB::select($queryFebrero);
-        $consumoEnero2 = DB::select($queryEnero);
+        $queryFebreroAgua = "(SELECT m.consumo
+                    FROM measurements m
+                    WHERE MONTH(m.fecha) = 2 AND YEAR(m.fecha) = $anoActual AND m.id_sensor = 2
+                    ORDER BY m.fecha DESC
+                    LIMIT 1)";
 
-        $consumoFebrero = $consumoFebrero[0]->consumo;
-        $consumoEnero2 = $consumoEnero2[0]->consumo;
+        $queryDiciembreAgua = "(SELECT m.consumo
+                    FROM measurements m
+                    WHERE MONTH(m.fecha) = 12 AND YEAR(m.fecha) = $anoAnterior AND m.id_sensor = 2
+                    ORDER BY m.fecha DESC
+                    LIMIT 1)";
 
-        $consumoTotalFebrero = $consumoFebrero - $consumoEnero2;
+        // Obtener los consumos
+        $consumoEneroElectricidad = DB::select($queryEneroElectricidad)[0]->consumo;
+        $consumoFebreroElectricidad = DB::select($queryFebreroElectricidad)[0]->consumo;
+        $consumoDiciembreElectricidad = DB::select($queryDiciembreElectricidad)[0]->consumo;
 
-        
-        
-        dd($consumoTotalFebrero);
-        
+        $consumoEneroAgua = DB::select($queryEneroAgua)[0]->consumo;
+        $consumoFebreroAgua = DB::select($queryFebreroAgua)[0]->consumo;
+        $consumoDiciembreAgua = DB::select($queryDiciembreAgua)[0]->consumo;
 
-        return view('graficas.month') -> with('resultados', $consumoTotalFebrero);
+        // Calcular los consumos totales
+        $consumoTotalEneroElectricidad = $consumoEneroElectricidad - $consumoDiciembreElectricidad;
+        $consumoTotalFebreroElectricidad = $consumoFebreroElectricidad - $consumoEneroElectricidad;
+
+        $consumoTotalEneroAgua = $consumoEneroAgua - $consumoDiciembreAgua;
+        $consumoTotalFebreroAgua = $consumoFebreroAgua - $consumoEneroAgua;
+
+        $resultados = [
+            "consumoTotalEneroElectricidad" => $consumoTotalEneroElectricidad,
+            "consumoTotalFebreroElectricidad" => $consumoTotalFebreroElectricidad,
+            "consumoTotalEneroAgua" => $consumoTotalEneroAgua,
+            "consumoTotalFebreroAgua" => $consumoTotalFebreroAgua
+        ];
+
+        return view('graficas.month') -> with('resultados', $resultados);
 
     }
 

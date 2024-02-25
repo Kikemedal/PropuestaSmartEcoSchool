@@ -3,34 +3,67 @@
 
 @section('title', 'Graficas de consumo anual')
 @section('subtitle', 'Grafica de consumo mensual')
-
+<?php setlocale(LC_TIME, 'es_ES.UTF-8'); ?>
 @section('graficaAgua')
-<h3> Consumo mensual de agua 💧</h3>
-<div id = 'grafica' style="width: 600px;height:400px;">
+  <!-- En la grafica se obtiene el mes actual y el anterior de manera logica
+      Por lo que si cambiamos de mes, el codigo se adapta. Habría que hacer el mismo cambio en las consultas. -->
+  <h3> Consumo mensual de agua 💧</h3>
+  <div id = 'grafica' style="width: 600px;height:400px;">
     <script type="text/javascript">
+      var myChart = echarts.init(document.getElementById('grafica'));
+        option = {
+          xAxis: {
+            type: 'category',
+            data: ["{{ strftime('%B', strtotime('-1 month')) }}", "{{ strftime('%B') }}"],
+          },
+          yAxis: {
+            type: 'value',
+            name: 'Consumo (m3)'
+          },
+          series: [
+            {
+              data: [{{$resultados['consumoTotalEneroAgua']}}, {{$resultados['consumoTotalFebreroAgua']}}],
+              type: 'bar'
+            }
+          ]
+        };
+      myChart.setOption(option);
 
-var myChart = echarts.init(document.getElementById('grafica'));
-      option = {
-  xAxis: {
-    type: 'category',
-    data: ['Feberero', 'Enero'],
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [
-    {
-      data: [120, 200],
-      type: 'bar'
-    }
-  ]
-};
-
-myChart.setOption(option);
-
-const nombre = <?php echo json_encode($resultados['mediaMesActual'])?>;
     </script>
-<div>
+  <div>
+@endsection
+
+
+@section('graficaElectricidad')
+        <h3> Consumo mensual de electricidad  ⚡</h3>
+        <div id = 'grafica2' style="width: 600px;height:400px;">
+          <script type="text/javascript">
+            var myChart = echarts.init(document.getElementById('grafica2'));
+              option = {
+                xAxis: {
+                  type: 'category',
+                  data: ["{{ strftime('%B', strtotime('-1 month')) }}", "{{ strftime('%B') }}"],
+                },
+                yAxis: {
+                  type: 'value',
+                  name: 'Consumo (kWh)'
+                },
+                series: [
+                  {
+                    data: [{{$resultados['consumoTotalEneroElectricidad']}}, {{$resultados['consumoTotalFebreroElectricidad']}}],
+                    type: 'bar'
+                  }
+                ]
+              };
+            myChart.setOption(option);
+          </script>
+@endsection
+
+
+@section('comentarios')
+<marquee behavior="scroll" direction="left" scrollamount="5">
+    Ahorra energía y agua. ¡Cuida el planeta! 🌍 · Apaga las luces no necesarias · Cierra los grifos correctamente · Aprovecha la luz natural · No malgastes papel
+</marquee>
 @endsection
 
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
