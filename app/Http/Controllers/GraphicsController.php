@@ -52,31 +52,71 @@ class GraphicsController extends Controller
 
     public function compararMes(){
 
-        //Obtener media del mes anterior al que estamos .
-        //Obtener media del mes actual en el que estamos.
-
-        //¿Como sabemos en el mes en el que estamos?
-        //Necesito el mes actual en numero y luego segun el numero mostrarlo en pantalla como nombre
-
-        $mes_actual = date("n");
-        
-        
-        $query = "SELECT m.id_sensor, m.consumo, CONCAT(YEAR(m.fecha), '-', LPAD(MONTH(m.fecha), 2, '0')) AS fecha
-        FROM measurements m
-        INNER JOIN (
-            SELECT MAX(fecha) AS ultima_fecha
-            FROM measurements
-            WHERE id_sensor = 1
-            GROUP BY YEAR(fecha), MONTH(fecha)
-        ) AS ultimas_fechas ON m.fecha = ultimas_fechas.ultima_fecha
-         WHERE (m.id_sensor = 1) AND (fecha LIKE '2022-%%') 
-        ORDER BY m.fecha DESC;";
-
-        $resultados = DB::select($query);
-        dd($resultados);
+        //Para saber el consumo del mes actual necesito saber el consumo acumulado del mes actual y restarselo al cunsumo acumulado
+        //del mes anterior. Y para saber el consumo del mes anterior, necesito hacer lo mismo con el mes que le corresponde.
         
 
-        return view('graficas.month') -> with('resultados', $resultados);
+        //Obtencion del consumo de ENERO de 2023.
+        
+        $mesActual = 1; // Enero
+        $anoActual = 2023;
+        $mesAnterior = 12; // Diciembre
+        $anoAnterior = 2022;
+        
+        $queryMesActual = "SELECT m.consumo
+                           FROM measurements m
+                           WHERE MONTH(m.fecha) = $mesActual AND YEAR(m.fecha) = $anoActual AND m.id_sensor = 1
+                           ORDER BY m.fecha DESC
+                           LIMIT 1";
+        
+        $queryMesAnterior = "SELECT m.consumo
+                             FROM measurements m 
+                             WHERE MONTH(m.fecha) = $mesAnterior AND YEAR(m.fecha) = $anoAnterior AND m.id_sensor = 1
+                             ORDER BY m.fecha DESC
+                             LIMIT 1";
+        
+        $consumoMesActual = DB::select($queryMesActual);
+        $consumoMesAnterior = DB::select($queryMesAnterior);
+        
+        $consumoMesActual = $consumoMesActual[0]->consumo;
+        $consumoMesAnterior = $consumoMesAnterior[0]->consumo;
+        
+        $consumoEnero1 = $consumoMesActual - $consumoMesAnterior;
+
+
+        //Obtencion del consumo de FEBRERO de 2023.
+
+        $mesFebrero = 2; // Febrero
+        $anoFebrero = 2023;
+        $mesEnero = 1; // Enero
+        $anoEnero = 2023;
+
+        $queryFebrero = "SELECT m.consumo
+                 FROM measurements m
+                 WHERE MONTH(m.fecha) = $mesFebrero AND YEAR(m.fecha) = $anoFebrero AND m.id_sensor = 1
+                 ORDER BY m.fecha DESC
+                 LIMIT 1";
+
+        $queryEnero = "SELECT m.consumo
+               FROM measurements m 
+               WHERE MONTH(m.fecha) = $mesEnero AND YEAR(m.fecha) = $anoEnero AND m.id_sensor = 1
+               ORDER BY m.fecha DESC
+               LIMIT 1";
+
+        $consumoFebrero = DB::select($queryFebrero);
+        $consumoEnero2 = DB::select($queryEnero);
+
+        $consumoFebrero = $consumoFebrero[0]->consumo;
+        $consumoEnero2 = $consumoEnero2[0]->consumo;
+
+        $consumoTotalFebrero = $consumoFebrero - $consumoEnero2;
+
+        
+        
+        dd($consumoTotalFebrero);
+        
+
+        return view('graficas.month') -> with('resultados', $consumoTotalFebrero);
 
     }
 

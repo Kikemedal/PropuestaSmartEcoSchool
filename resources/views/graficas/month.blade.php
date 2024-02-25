@@ -28,7 +28,7 @@ var myChart = echarts.init(document.getElementById('grafica'));
 
 myChart.setOption(option);
 
-const nombre = <?php echo json_encode($resultados)?>;
+const nombre = <?php echo json_encode($resultados['mediaMesActual'])?>;
     </script>
 <div>
 @endsection
