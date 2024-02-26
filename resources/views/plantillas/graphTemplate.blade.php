@@ -31,19 +31,26 @@
   <!-- Cuerpo que será sustituido en las vistas hijas donde se añadiran las graficas visuales -->
   <div class="container my-4">
     <div class="row">
-      <div class="col-12"> 
+      <div class="col-md-6"> 
         @yield('graficaAgua')
       </div>
-      <div class="col-12">
+      <div class="col-md-6">
         @yield('graficaElectricidad')
       </div>
     </div> 
+    <div class="row">
+      <div class="col-md-6">
+        @yield('graficaAgua2')
+      </div>
+      <div class="col-md-6">
+        @yield('graficaElectricidad2')
+      </div>
   </div>
 
 
   <!--Consejos acerca del ahorro de energía y agua -->
   <div class="container d-flex align-items-center flex-column">
-    @yield('comentarios')
+     @yield('comentarios')
   </div>
 
   <!-- JS Bootstrap -->

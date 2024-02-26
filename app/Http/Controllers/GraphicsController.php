@@ -19,33 +19,133 @@ class GraphicsController extends Controller
     */ 
 
     public function compararAño(){
-        //Consumo de cada mes de electricidad.
-        /*
-        $query = "SELECT CONCAT(YEAR(m.fecha), '-', LPAD(MONTH(m.fecha), 2, '0')) AS fecha,
-        MAX(m.consumo) AS consumo_total_mes
+
+        //Consumo de cada mes de electricidad del 2022. Para ello necesitamos obtener los datos de cada mes y restarle el consumo del mes anterior.
+      
+        $query = "SELECT m.id_sensor, m.consumo, CONCAT(YEAR(m.fecha), '-', LPAD(MONTH(m.fecha), 2, '0')) AS fecha
         FROM measurements m
-        WHERE m.id_sensor = 1
-        AND YEAR(m.fecha) = 2022 -- Reemplaza con el año deseado
-        GROUP BY YEAR(m.fecha), MONTH(m.fecha)
-        ORDER BY fecha;";
+        INNER JOIN (
+            SELECT MAX(fecha) AS ultima_fecha
+            FROM measurements
+            WHERE id_sensor = 1 AND YEAR(fecha) >= 2021
+            GROUP BY YEAR(fecha), MONTH(fecha)
+        ) AS ultimas_fechas ON m.fecha = ultimas_fechas.ultima_fecha
+        WHERE m.id_sensor = 1 AND YEAR(m.fecha) >= 2021
+        ORDER BY m.fecha ASC;";
+    
+        $resultadosElectricidad = DB::select($query);
+    
+        $consumoRealElectricidad = [];
+        $consumoAnteriorElectricidad = 0;
+        foreach ($resultadosElectricidad as $resultado) {
+            $year = explode('-', $resultado->fecha)[0];
+            if ($year == '2022') {
+                $consumoRealElectricidad[] = [
+                    'fecha' => $resultado->fecha,
+                    'consumo_real' => $resultado->consumo - $consumoAnteriorElectricidad
+                ];
+            }
+        $consumoAnteriorElectricidad = $resultado->consumo;
+        }
 
-        $resultados = DB::select($query);
-        */
+        /*dd($consumoReal); */
 
-        //Consumo de cada mes de agua.
-        /*
-        $query = "SELECT CONCAT(YEAR(m.fecha), '-', LPAD(MONTH(m.fecha), 2, '0')) AS fecha,
-        MAX(m.consumo) AS consumo_total_mes
+        /*Consumo de cada mes de electricidad del 2023.*/
+
+        $query = "SELECT m.id_sensor, m.consumo, CONCAT(YEAR(m.fecha), '-', LPAD(MONTH(m.fecha), 2, '0')) AS fecha
         FROM measurements m
-        WHERE m.id_sensor = 2
-        AND YEAR(m.fecha) = 2022 -- Reemplaza con el año deseado
-        GROUP BY YEAR(m.fecha), MONTH(m.fecha)
-        ORDER BY fecha;";
+        INNER JOIN (
+            SELECT MAX(fecha) AS ultima_fecha
+            FROM measurements
+            WHERE id_sensor = 1 AND YEAR(fecha) >= 2021
+            GROUP BY YEAR(fecha), MONTH(fecha)
+        ) AS ultimas_fechas ON m.fecha = ultimas_fechas.ultima_fecha
+        WHERE m.id_sensor = 1 AND YEAR(m.fecha) >= 2021
+        ORDER BY m.fecha ASC;";
+    
+        $resultadosElectricidad2 = DB::select($query);
+    
+        $consumoRealElectricidad2 = [];
+        $consumoAnteriorElectricidad2 = 0;
+        foreach ($resultadosElectricidad2 as $resultado) {
+            $year = explode('-', $resultado->fecha)[0];
+            if ($year == '2023') {
+                $consumoRealElectricidad2[] = [
+                    'fecha' => $resultado->fecha,
+                    'consumo_real' => $resultado->consumo - $consumoAnteriorElectricidad2
+                ];
+            }
+        $consumoAnteriorElectricidad2 = $resultado->consumo;
+        }
+        
 
-        $resultados = DB::select($query);
-        */
+        
 
-        return view('graficas.year');
+        //Consumo de cada mes del 2022 agua.
+
+        $query = "SELECT m.id_sensor, m.consumo, CONCAT(YEAR(m.fecha), '-', LPAD(MONTH(m.fecha), 2, '0')) AS fecha
+        FROM measurements m
+        INNER JOIN (
+            SELECT MAX(fecha) AS ultima_fecha
+            FROM measurements
+            WHERE id_sensor = 2 AND YEAR(fecha) >= 2021
+            GROUP BY YEAR(fecha), MONTH(fecha)
+        ) AS ultimas_fechas ON m.fecha = ultimas_fechas.ultima_fecha
+        WHERE m.id_sensor = 2 AND YEAR(m.fecha) >= 2021
+        ORDER BY m.fecha ASC;";
+    
+        $resultadosAgua = DB::select($query);
+    
+        $consumoRealAgua = [];
+        $consumoAnteriorAgua = 0;
+        foreach ($resultadosAgua as $resultado) {
+            $year = explode('-', $resultado->fecha)[0];
+            if ($year == '2022') {
+                $consumoRealAgua[] = [
+                    'fecha' => $resultado->fecha,
+                    'consumo_real' => $resultado->consumo - $consumoAnteriorAgua
+                ];
+            }
+        $consumoAnteriorAgua = $resultado->consumo;
+        }
+
+        /*Consumo agua 2023*/
+
+        $query = "SELECT m.id_sensor, m.consumo, CONCAT(YEAR(m.fecha), '-', LPAD(MONTH(m.fecha), 2, '0')) AS fecha
+        FROM measurements m
+        INNER JOIN (
+            SELECT MAX(fecha) AS ultima_fecha
+            FROM measurements
+            WHERE id_sensor = 2 AND YEAR(fecha) >= 2021
+            GROUP BY YEAR(fecha), MONTH(fecha)
+        ) AS ultimas_fechas ON m.fecha = ultimas_fechas.ultima_fecha
+        WHERE m.id_sensor = 2 AND YEAR(m.fecha) >= 2021
+        ORDER BY m.fecha ASC;";
+    
+        $resultadosAgua2 = DB::select($query);
+    
+        $consumoRealAgua2 = [];
+        $consumoAnteriorAgua2 = 0;
+        foreach ($resultadosAgua2 as $resultado) {
+            $year = explode('-', $resultado->fecha)[0];
+            if ($year == '2023') {
+                $consumoRealAgua2[] = [
+                    'fecha' => $resultado->fecha,
+                    'consumo_real' => $resultado->consumo - $consumoAnteriorAgua2
+                ];
+            }
+        $consumoAnteriorAgua2 = $resultado->consumo;
+        }
+        
+        $ArrayResultados = [
+            "consumoRealElectricidad" => $consumoRealElectricidad,
+            "consumoRealAgua" => $consumoRealAgua,
+            "consumoRealElectricidad2" => $consumoRealElectricidad2,
+            "consumoRealAgua2" => $consumoRealAgua2
+        ];       
+        
+        /*dd($consumoReal)*/;
+        return view('graficas.year')->with('ArrayResultados', $ArrayResultados);
 
     }
 

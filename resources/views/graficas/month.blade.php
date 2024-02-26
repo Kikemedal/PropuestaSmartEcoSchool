@@ -10,8 +10,8 @@
   <h3> Consumo mensual de agua 💧</h3>
   <div id = 'grafica' style="width: 600px;height:400px;">
     <script type="text/javascript">
-      var myChart = echarts.init(document.getElementById('grafica'));
-        option = {
+      var myChart1 = echarts.init(document.getElementById('grafica'));
+        option1 = {
           xAxis: {
             type: 'category',
             data: ["{{ strftime('%B', strtotime('-1 month')) }}", "{{ strftime('%B') }}"],
@@ -27,10 +27,10 @@
             }
           ]
         };
-      myChart.setOption(option);
+      myChart1.setOption(option1);
 
     </script>
-  <div>
+  </div>
 @endsection
 
 
@@ -38,8 +38,8 @@
         <h3> Consumo mensual de electricidad  ⚡</h3>
         <div id = 'grafica2' style="width: 600px;height:400px;">
           <script type="text/javascript">
-            var myChart = echarts.init(document.getElementById('grafica2'));
-              option = {
+            var myChart2 = echarts.init(document.getElementById('grafica2'));
+              option2 = {
                 xAxis: {
                   type: 'category',
                   data: ["{{ strftime('%B', strtotime('-1 month')) }}", "{{ strftime('%B') }}"],
@@ -55,10 +55,11 @@
                   }
                 ]
               };
-            myChart.setOption(option);
+            myChart2.setOption(option2);
           </script>
+        </div>
 @endsection
-
+ 
 
 @section('comentarios')
 <marquee behavior="scroll" direction="left" scrollamount="5">
