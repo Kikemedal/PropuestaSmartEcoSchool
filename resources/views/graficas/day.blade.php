@@ -68,7 +68,7 @@ myChart1.setOption(option1);
     },
     series: [
         {
-            name: 'Consumo de agua',
+            name: 'Consumo de electricidad',
             type: 'gauge',
             min: 0,
             max: {{ $resultados['consumoRealElectricidad'][1] }},
