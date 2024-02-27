@@ -1,4 +1,4 @@
-@extends('plantillas.graphTemplate')
+@extends('plantillas.yearAndMonthTemplate')
 
 
 @section('title', 'Graficas de consumo anual')

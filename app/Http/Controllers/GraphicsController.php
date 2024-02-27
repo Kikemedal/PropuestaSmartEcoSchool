@@ -155,6 +155,9 @@ class GraphicsController extends Controller
         //Para saber el consumo del mes actual necesito saber el consumo acumulado del mes actual y restarselo al cunsumo acumulado
         //del mes anterior. Y para saber el consumo del mes anterior, necesito hacer lo mismo con el mes que le corresponde.
         
+        //En cualquier caso que se quieran usar datos actuales, se usaria la funcion NOW() para obtener la fecha actual.
+        //Esto esta hecho teniendo en cuenta que los datos de la base de datos son de 2022 y 2023.
+
         $anoActual = 2023;
         $anoAnterior = 2022;
 
@@ -238,7 +241,51 @@ class GraphicsController extends Controller
 
     public function compararDia(){
 
-        return view('graficas.day');
+
+        
+
+        //Ultimo y penultimo consumo del electricidad de la base de datos.
+
+        $query = "SELECT m.consumo
+        FROM measurements m
+        WHERE m.id_sensor = 1
+        ORDER BY m.fecha DESC
+        LIMIT 3;";
+    
+        $resultadosElectricidad = DB::select($query);
+
+        
+
+       //Ultimo y penultimo consumo de agua de la base de datos.
+
+       $query = "SELECT m.consumo
+        FROM measurements m
+        WHERE m.id_sensor = 2
+        ORDER BY m.fecha DESC
+        LIMIT 3;";
+    
+        $resultadosAgua = DB::select($query);
+
+        //Ahora calculamos el consumo real de electricidad y agua.
+
+        //De electricidad
+        $consumoRealElectricidad = $resultadosElectricidad[0]->consumo - $resultadosElectricidad[1]->consumo;
+        $consumoRealElectricidadDiaAnterior = $resultadosElectricidad[1]->consumo - $resultadosElectricidad[2]->consumo;
+
+        //De agua
+        $consumoRealAgua = $resultadosAgua[0]->consumo - $resultadosAgua[1]->consumo; 
+        $consumoRealAguaDiaAnterior = $resultadosAgua[1]->consumo - $resultadosAgua[2]->consumo;
+
+
+        $resultados = [
+            "consumoRealElectricidad" => [$consumoRealElectricidad, $consumoRealElectricidadDiaAnterior],
+            "consumoRealAgua" => [$consumoRealAgua, $consumoRealAguaDiaAnterior]
+        ];
+       
+
+        return view('graficas.day')->with('resultados', $resultados);
+
+
 
     }
 
